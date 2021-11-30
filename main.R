@@ -1,4 +1,5 @@
 #Importing libraries
+source("functions.R")
 library(igraph)
 
 
@@ -6,11 +7,11 @@ library(igraph)
 
 #Defining parameters
 n0 <- 5 #Initial number ov vertices
-m0 <- 2 #Initial number of edges of every new vertex
 
-#Create an initial barabasi graph
-g <- barabasi.game(50)
-plot(g,vertex.label = NA)
+#Create an initial graph of n0 nodes
+g<-graph.empty(n=n0)
+plot(g)
+
 
 #Simulation (We can use this section to simulate all the three different graphs)
 t1 <- 1
@@ -21,6 +22,10 @@ tmax <- 10^5
 
 #Simulate from time=0 to time=tmax
 for(time in 0:tmax){
+
+
+
+
   #At each time add a node using preferential attachment
   #For node attached at time t-i, monitor them
 }
