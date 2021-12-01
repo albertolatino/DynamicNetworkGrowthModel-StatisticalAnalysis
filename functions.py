@@ -60,12 +60,12 @@ def connect_node_random(g: Graph, m0: int):
 def connect_node_no_growth(g: Graph, m0: int):
 
     stubs = get_stubs(g)
-
     nodes = g.vs.indices
 
     source_id = random.choice(nodes)
     source_node = g.vs[source_id]
-    #nodes.remove(target_id)
+    #Remove source node from possible target nodes to avoid loops
+    stubs.remove(source_id)
 
     # Pick m0 random nodes based on their occurences in the stubs (proportional to degree of nodes)
     for i in range(m0):
@@ -102,6 +102,7 @@ def barabasi_growth_preferential(n0,m0,times,tmax):
     # Lists that will contain the TimeSeries information for each one of the analyzed nodes
     # They are initialized with 0 since the degree as soon the node ia created is 0
     timeseries = [[0], [0], [0], [0]]
+    degree_sequence = []
     analyzed_nodes = []
 
     # Simulate from time=0 to time=tmax
@@ -118,7 +119,12 @@ def barabasi_growth_preferential(n0,m0,times,tmax):
         for i in range(len(analyzed_nodes)):
             timeseries[i].append(analyzed_nodes[i].degree())
 
-    return timeseries
+    # Get all the nodes after the simulation
+    nodes = g.vs.indices
+    for node in nodes:
+        degree_sequence.append(g.vs[node].degree())
+
+    return timeseries, degree_sequence
 
 def barabasi_growth_random(n0,m0,times,tmax):
 
@@ -128,6 +134,7 @@ def barabasi_growth_random(n0,m0,times,tmax):
     # Lists that will contain the TimeSeries information for each one of the analyzed nodes
     # They are initialized with 0 since the degree as soon the node ia created is 0
     timeseries = [[0], [0], [0], [0]]
+    degree_sequence = []
     analyzed_nodes = []
 
     # Simulate from time=0 to time=tmax
@@ -144,7 +151,12 @@ def barabasi_growth_random(n0,m0,times,tmax):
         for i in range(len(analyzed_nodes)):
             timeseries[i].append(analyzed_nodes[i].degree())
 
-    return timeseries
+    # Get all the nodes after the simulation
+    nodes = g.vs.indices
+    for node in nodes:
+        degree_sequence.append(g.vs[node].degree())
+
+    return timeseries, degree_sequence
 
 def barabasi_no_growth(n0,m0,times,tmax):
 
@@ -154,6 +166,7 @@ def barabasi_no_growth(n0,m0,times,tmax):
     # Lists that will contain the TimeSeries information for each one of the analyzed nodes
     # They are initialized with 0 since the degree as soon the node ia created is 0
     timeseries = [[0], [0], [0], [0]]
+    degree_sequence = []
     analyzed_nodes = []
 
     # Simulate from time=0 to time=tmax
@@ -170,4 +183,15 @@ def barabasi_no_growth(n0,m0,times,tmax):
         for i in range(len(analyzed_nodes)):
             timeseries[i].append(analyzed_nodes[i].degree())
 
-    return timeseries
+
+    #Get all the nodes after the simulation
+    nodes = g.vs.indices
+    for node in nodes:
+        degree_sequence.append(g.vs[node].degree())
+
+    return timeseries,degree_sequence
+
+
+def write_file(data, filename:str):
+    with open(filename, "w") as output:
+        output.write(str(data).replace('[','').replace(']','')+ '\n')
