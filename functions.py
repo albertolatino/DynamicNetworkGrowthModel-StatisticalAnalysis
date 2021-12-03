@@ -194,4 +194,4 @@ def barabasi_no_growth(n0,m0,times,tmax):
 
 def write_file(data, filename:str):
     with open(filename, "w") as output:
-        output.write(str(data).replace('[','').replace(']','')+ '\n')
+        output.write(str(data).replace('[','').replace(']','').replace(', ','\n'))
