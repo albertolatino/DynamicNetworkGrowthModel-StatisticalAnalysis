@@ -22,8 +22,8 @@ minus_log_likelihood_geometric <- function(q){
 
 }
 
-minus_log_likelihood_zeta_gamma_2 <- function() {
-  2 * sum(log(x)) + length(x) * log((pi)^2/6)
+minus_log_likelihood_zeta_gamma_3 <- function() {
+  3 * sum(log(x)) + length(x) * log(zeta(3))
 }
 
 minus_log_likelihood_truncated_zeta <- function(gamma,kmax){
