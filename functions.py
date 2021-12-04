@@ -1,6 +1,7 @@
 from igraph import Graph
 import numpy as np
 import random
+import math
 
 
 def nodes_probabilities(g: Graph):
@@ -103,7 +104,6 @@ def get_stubs(g: Graph):
 def barabasi_growth_preferential(n0, m0, times, tmax):
     # Create an initial graph of n0 nodes
     g = Graph.Barabasi(n=n0, m=m0, directed=False)
-    # g = Graph.Erdos_Renyi(n=n0, p=0.5)
 
     # Lists that will contain the TimeSeries information for each one of the analyzed nodes
     # They are initialized with 0 since the degree as soon the node ia created is 0
@@ -200,3 +200,9 @@ def barabasi_no_growth(n0, m0, times, tmax):
 def write_file(data, filename: str):
     with open(filename, "w") as output:
         output.write(str(data).replace('[', '').replace(']', '').replace(', ', '\n'))
+
+
+def f(timeseries,n0,m0,ti):
+    f = lambda x : x + m0 * (math.log(n0 + ti - 1)) - m0
+    vfunc = np.vectorize(f)
+    return vfunc(timeseries)
