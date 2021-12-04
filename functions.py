@@ -12,11 +12,14 @@ def nodes_probabilities(g: Graph):
         prob = node_degree / (2 * len(g.es))
         probabilities.append(prob)
 
-    return probabilities;
+    return probabilities
+
+
+def remove_values_from_list(the_list, val):
+    return [value for value in the_list if value != val]
 
 
 def connect_node(g: Graph, m0: int):
-
     stubs = get_stubs(g)
 
     # The just added node is the (number_of_vertex-1)-th
@@ -29,15 +32,16 @@ def connect_node(g: Graph, m0: int):
         target_id = random.choice(stubs)
         target_node = g.vs[target_id]
 
-        #Connect the new node to target
-        g.add_edge(new_node,target_node)
-        #Remove the id of that node from stubs (no multiedges, cannot be chosen again)
-        stubs.remove(target_id)
+        # Connect the new node to target
+        g.add_edge(new_node, target_node)
+        # Remove all occurrences of the id of that node from stubs (no multiedges, cannot be chosen again)
+        # stubs.remove(target_id)  # wrong implementation, only deletes first occurrence of target_id
+        stubs = remove_values_from_list(stubs, target_id)  # correct implementation
 
     return new_node
 
-def connect_node_random(g: Graph, m0: int):
 
+def connect_node_random(g: Graph, m0: int):
     nodes = g.vs.indices
 
     g.add_vertex(1)
@@ -51,21 +55,22 @@ def connect_node_random(g: Graph, m0: int):
 
         # Connect the new node to target
         g.add_edge(new_node, target_node)
-        # Remove the id of that node from stubs (no multiedges, cannot be chosen again)
-        nodes.remove(target_id)
+        # Remove all occurrences of the id of that node from stubs (no multiedges, cannot be chosen again)
+        # nodes.remove(target_id)  # wrong implementation, only deletes first occurrence of target_id
+        nodes = remove_values_from_list(nodes, target_id)  # correct implementation
 
     return new_node
 
 
 def connect_node_no_growth(g: Graph, m0: int):
-
     stubs = get_stubs(g)
     nodes = g.vs.indices
 
     source_id = random.choice(nodes)
     source_node = g.vs[source_id]
-    #Remove source node from possible target nodes to avoid loops
-    stubs.remove(source_id)
+    # Remove source node from possible target nodes to avoid loops
+    # stubs.remove(source_id)  # wrong implementation
+    stubs = remove_values_from_list(stubs, source_id)
 
     # Pick m0 random nodes based on their occurences in the stubs (proportional to degree of nodes)
     for i in range(m0):
@@ -77,12 +82,13 @@ def connect_node_no_growth(g: Graph, m0: int):
         # Connect the new node to target
         g.add_edge(source_node, target_node)
         # Remove the id of that node from stubs (no multiedges, cannot be chosen again)
-        stubs.remove(target_id)
+        # stubs.remove(target_id)  # wrong implementation
+        stubs = remove_values_from_list(stubs, target_id)
 
     return source_node
 
-def get_stubs(g:Graph):
 
+def get_stubs(g: Graph):
     stubs = []
 
     for edge in g.es:
@@ -94,10 +100,10 @@ def get_stubs(g:Graph):
     return stubs
 
 
-def barabasi_growth_preferential(n0,m0,times,tmax):
-
+def barabasi_growth_preferential(n0, m0, times, tmax):
     # Create an initial graph of n0 nodes
     g = Graph.Barabasi(n=n0, m=m0, directed=False)
+    # g = Graph.Erdos_Renyi(n=n0, p=0.5)
 
     # Lists that will contain the TimeSeries information for each one of the analyzed nodes
     # They are initialized with 0 since the degree as soon the node ia created is 0
@@ -126,8 +132,8 @@ def barabasi_growth_preferential(n0,m0,times,tmax):
 
     return timeseries, degree_sequence
 
-def barabasi_growth_random(n0,m0,times,tmax):
 
+def barabasi_growth_random(n0, m0, times, tmax):
     # Create an initial graph of n0 nodes
     g = Graph.Barabasi(n=n0, m=m0, directed=False)
 
@@ -158,8 +164,8 @@ def barabasi_growth_random(n0,m0,times,tmax):
 
     return timeseries, degree_sequence
 
-def barabasi_no_growth(n0,m0,times,tmax):
 
+def barabasi_no_growth(n0, m0, times, tmax):
     # Create an initial graph of n0 nodes
     g = Graph.Barabasi(n=n0, m=m0, directed=False)
 
@@ -183,15 +189,14 @@ def barabasi_no_growth(n0,m0,times,tmax):
         for i in range(len(analyzed_nodes)):
             timeseries[i].append(analyzed_nodes[i].degree())
 
-
-    #Get all the nodes after the simulation
+    # Get all the nodes after the simulation
     nodes = g.vs.indices
     for node in nodes:
         degree_sequence.append(g.vs[node].degree())
 
-    return timeseries,degree_sequence
+    return timeseries, degree_sequence
 
 
-def write_file(data, filename:str):
+def write_file(data, filename: str):
     with open(filename, "w") as output:
-        output.write(str(data).replace('[','').replace(']','').replace(', ','\n'))
+        output.write(str(data).replace('[', '').replace(']', '').replace(', ', '\n'))

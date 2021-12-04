@@ -46,6 +46,7 @@ for (i in 1:length(sequences)){
   #Degree sequence
   x <- sequences[i]
   x <- x[[1]]$V1
+  x <- x[order(x)]
   maxN <- max(x)
   # print(x)
 
@@ -94,7 +95,7 @@ for (i in 1:length(sequences)){
 
   mle_altmann <- mle(
     minus_log_likelihood_altmann,
-    start = list(gamma = 2.5, delta = 0.001),
+    start = list(gamma = 1.5, delta = 0.001),
     method = "L-BFGS-B",
     lower=c(1.0000001, 0.00002)
   )
