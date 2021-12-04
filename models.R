@@ -1,20 +1,20 @@
-model_0 <- function(a, d=0) {
+model_0 <- function(t, a, d=0) {
   a * t + d
 }
 
-model_1 <- function (a, d=0) {
+model_1 <- function (t, a, d=0) {
   a * t ^ 0.5 + d
 }
 
-model_2 <- function (a, b, d=0) {
+model_2 <- function (t, a, b, d=0) {
   a * t ^ b + d
 }
 
-model_3 <- function (a, c, d=0) {
+model_3 <- function (t, a, c, d=0) {
   a * exp(c*t) + d
 }
 
-model_4 <- function(a, d1, d2=0) {
+model_4 <- function(t, a, d1, d2=0) {
   a * log(t + d1) + d2
 }
 

@@ -47,6 +47,10 @@ write_file(deg_seq1,"deg_sequence_preferential.txt")
 write_file(deg_seq2,"deg_sequence_random.txt")
 write_file(deg_seq3,"deg_sequence_no_growth.txt")
 
+with open('timeseries_preferential.txt', 'w', newline='') as f:
+    writer = csv.writer(f)
+    writer.writerows(timeseries1)
+
 #Visual comparison of Vertex Degree over Time and Ki'(t)
 
 #Plot the K-ith for each vertex
