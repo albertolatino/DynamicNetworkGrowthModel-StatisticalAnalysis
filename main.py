@@ -6,13 +6,14 @@ from igraph import *
 from functions import *
 from matplotlib import pyplot as plt
 import numpy as np
+import math
 #Defining parameters
 n0 = 5 #Initial number ov vertices
-m0 = 5 #Initial number of edges of a new vertex
+m0 = 4 #Initial number of edges of a new vertex
 times = [1,10,100,1000]
-tmax = 1000
-experiments = 5
-
+tmax = 10000
+experiments = 15
+#random.seed(42)
 
 #write_file(timeseries1[0],"node1_growth_preferential.txt")q
 #write_file(timeseries1[1],"node2_growth_preferential.txt")
@@ -33,66 +34,59 @@ n1_res1 = []
 n2_res1 = []
 n3_res1 = []
 n4_res1 = []
+deg_res1 = []
 n1_res2 = []
 n2_res2 = []
 n3_res2 = []
 n4_res2 = []
 
 
+for i in range(1,experiments):
 
-timeseries1,deg_seq1 = barabasi_growth_preferential(n0,m0,times,tmax)
-timeseries2,deg_seq2 = barabasi_growth_random(n0,m0,times,tmax)
-timeseries3,deg_seq3 = barabasi_no_growth(10000,2,times,tmax)
-write_file(deg_seq1,"deg_sequence_preferential.txt")
-write_file(deg_seq2,"deg_sequence_random.txt")
-write_file(deg_seq3,"deg_sequence_no_growth.txt")
-
-#Visual comparison of Vertex Degree over Time and Ki'(t)
-
-#Plot the K-ith for each vertex
-n1_res1.append(timeseries1[0])
-n2_res1.append(timeseries1[1])
-n3_res1.append(timeseries1[2])
-n4_res1.append(timeseries1[3])
-n1_res2.append(timeseries2[0])
-n2_res2.append(timeseries2[1])
-n3_res2.append(timeseries2[2])
-n4_res2.append(timeseries2[3])
+    timeseries1,deg_seq1 = barabasi_growth_preferential(n0,m0,times,tmax)
+    timeseries2,deg_seq2 = barabasi_growth_random(n0,m0,times,tmax)
+    timeseries3,deg_seq3 = barabasi_no_growth(1000,5,times,tmax)
 
 
+    #Save for each node the different timeseries obtained in each experiment
+    n1_res1.append(timeseries3[0])
+    n2_res1.append(timeseries3[1])
+    n3_res1.append(timeseries3[2])
+    n4_res1.append(timeseries3[3])
+    deg_res1.append(deg_seq3)
+
+
+#Convert to np array
 res1=np.array([np.array(xi) for xi in n1_res1])
 res2=np.array([np.array(xi) for xi in n2_res1])
 res3=np.array([np.array(xi) for xi in n3_res1])
 res4=np.array([np.array(xi) for xi in n4_res1])
+deg=np.array([np.array(xi) for xi in deg_res1])
+
+#Average time series
+avg1 = np.average(res1, axis=0)
+avg2 = np.average(res2, axis=0)
+avg3 = np.average(res3, axis=0)
+avg4 = np.average(res4, axis=0)
+avg_deg = np.average(deg, axis=0)
+
+plot_growth_preferential(avg1,avg2,avg3,avg4,tmax,m0)
+plot_growth_random(avg1,avg2,avg3,avg4,tmax,n0,m0)
+plot_growth_random_full(avg1,avg2,avg3,avg4,tmax,n0,m0)
+plot_no_growth(avg1,avg2,avg3,avg4,tmax,n0,m0)
+
+#WRITE FILES
+
+# with open('timeseries_no_growth.txt', 'w', newline='') as f:
+#     writer = csv.writer(f)
+#     writer.writerows([avg1,avg2,avg3,avg4])
 
 
-#avg1 = np.average(res1, axis=0)
-#avg2 = np.average(res2, axis=0)
-#avg3 = np.average(res3, axis=0)
-#avg4 = np.average(res4, axis=0)
+np.savetxt("node1_no_growth.txt",avg1,delimiter="\n",fmt='%f')
+np.savetxt("node2_no_growth.txt",avg2,delimiter="\n",fmt='%f')
+np.savetxt("node3_no_growth.txt",avg3,delimiter="\n",fmt='%f')
+np.savetxt("node4_no_growth.txt",avg4,delimiter="\n",fmt='%f')
+np.savetxt("deg_sequence_no_growth.txt",deg[0],delimiter="\n",fmt='%f')
 
-#t = np.linspace(0,tmax,100)
-#k = m0*(t**0.5)
-# plot the function
-#plt.plot(t,k, 'r')
 
-#Comparing ki for Barabasi Preferential
-# plt.plot(timeseries1[0],color="blue")
-# plt.plot(np.array(timeseries1[1])*(10**0.5),color="red")
-# plt.plot(np.array(timeseries1[2])*(100**0.5),color="green")
-# plt.plot(np.array(timeseries1[2])*(1000**0.5),color="orange")
-# plt.show()
 
-#Comparing ki for Barabasi Random
-# plt.plot(f(np.array(timeseries2[0]),n0,m0,1),color="blue")
-# plt.plot(f(np.array(timeseries2[1]),n0,m0,10),color="red")
-# plt.plot(f(np.array(timeseries2[2]),n0,m0,100),color="green")
-# plt.plot(f(np.array(timeseries2[3]),n0,m0,100),color="orange")
-# plt.show()
-
-#Comparing ki for no Growth
-plt.plot(np.array(timeseries3[0]),color="blue")
-plt.plot(np.array(timeseries3[1]),color="red")
-plt.plot(np.array(timeseries3[2]),color="green")
-plt.plot(np.array(timeseries3[3]),color="orange")
-plt.show()

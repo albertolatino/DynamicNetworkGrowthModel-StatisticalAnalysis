@@ -1,5 +1,6 @@
 from igraph import Graph
 import numpy as np
+from matplotlib import pyplot as plt
 import random
 import math
 
@@ -103,7 +104,8 @@ def get_stubs(g: Graph):
 
 def barabasi_growth_preferential(n0, m0, times, tmax):
     # Create an initial graph of n0 nodes
-    g = Graph.Barabasi(n=n0, m=m0, directed=False)
+    #g = Graph.Barabasi(n=n0, m=m0, directed=False)
+    g = Graph.Erdos_Renyi(n=n0, p=1)
 
     # Lists that will contain the TimeSeries information for each one of the analyzed nodes
     # They are initialized with 0 since the degree as soon the node ia created is 0
@@ -112,7 +114,7 @@ def barabasi_growth_preferential(n0, m0, times, tmax):
     analyzed_nodes = []
 
     # Simulate from time=0 to time=tmax
-    for time in range(tmax):
+    for time in range(1,tmax):
 
         # Add a new node, m0 must be <= n0
         new_node = connect_node(g, m0)
@@ -136,12 +138,14 @@ def barabasi_growth_preferential(n0, m0, times, tmax):
 def barabasi_growth_random(n0, m0, times, tmax):
     # Create an initial graph of n0 nodes
     g = Graph.Barabasi(n=n0, m=m0, directed=False)
-
+    #g = Graph.Erdos_Renyi(n=n0,p=1)
     # Lists that will contain the TimeSeries information for each one of the analyzed nodes
     # They are initialized with 0 since the degree as soon the node ia created is 0
     timeseries = [[0], [0], [0], [0]]
     degree_sequence = []
     analyzed_nodes = []
+    #Select 4 random nodes ot be analyzed
+
 
     # Simulate from time=0 to time=tmax
     for time in range(tmax):
@@ -167,23 +171,21 @@ def barabasi_growth_random(n0, m0, times, tmax):
 
 def barabasi_no_growth(n0, m0, times, tmax):
     # Create an initial graph of n0 nodes
-    g = Graph.Barabasi(n=n0, m=m0, directed=False)
+    #g = Graph.Barabasi(n=n0, m=m0, directed=False)
+    g = Graph.Erdos_Renyi(n=n0,m=m0)
 
     # Lists that will contain the TimeSeries information for each one of the analyzed nodes
     # They are initialized with 0 since the degree as soon the node ia created is 0
     timeseries = [[0], [0], [0], [0]]
     degree_sequence = []
-    analyzed_nodes = []
+    analyzed_nodes = [g.vs[0],g.vs[9],g.vs[49],g.vs[99]]
+
 
     # Simulate from time=0 to time=tmax
     for time in range(tmax):
 
         # Add a new node, m0 must be <= n0
         new_node = connect_node_no_growth(g, m0)
-
-        # Start monitor the nodes
-        if time in times:
-            analyzed_nodes.append(new_node)
 
         # Update values
         for i in range(len(analyzed_nodes)):
@@ -206,3 +208,66 @@ def f(timeseries,n0,m0,ti):
     f = lambda x : x + m0 * (math.log(n0 + ti - 1)) - m0
     vfunc = np.vectorize(f)
     return vfunc(timeseries)
+
+
+def plot_growth_preferential(avg1,avg2,avg3,avg4,tmax,m0):
+    #Comparing ki for Barabasi Preferential
+    #plot the function
+    t = np.linspace(1000,tmax,9001)
+    k = m0*(t**0.5)
+    plt.plot(t,k, 'black', label = "Function")
+    plt.plot(t,avg1[999:],color="blue",label="Vertex t1")
+    plt.plot(t,avg2[990:]*(10**0.5),color="red",label="Vertex t2")
+    plt.plot(t,avg3[900:]*(100**0.5),color="green",label="Vertex t3")
+    plt.plot(t,avg4*(1000**0.5),color="orange",label="Vertex t4")
+    plt.xlim(1000, tmax)
+    plt.xlabel('Time')
+    plt.ylabel('Degree')
+    plt.legend()
+    plt.show()
+
+def plot_growth_random(avg1,avg2,avg3,avg4,tmax,n0,m0):
+    #Comparing ki for Barabasi Random
+    t = np.linspace(1000,tmax,9001)
+    k = m0*(np.log(m0+t-1))
+    plt.plot(t,k, 'black', label = "Function")
+    plt.plot(t,f(avg1[999:],n0,m0,1),color="blue",label="Vertex t1")
+    plt.plot(t,f(avg2[990:],n0,m0,10),color="red",label="Vertex t2")
+    plt.plot(t,f(avg3[900:],n0,m0,100),color="green",label="Vertex t3")
+    plt.plot(t,f(avg4,n0,m0,1000),color="orange",label="Vertex t4")
+    plt.legend()
+    plt.xlabel('Time')
+    plt.ylabel('Degree')
+
+    plt.show()
+
+def plot_growth_random_full(avg1,avg2,avg3,avg4,tmax,n0,m0):
+    #Comparing ki for Barabasi Random
+    t = np.linspace(0,tmax,9001)
+    k = m0*(np.log(m0+t-1))
+    plt.plot(t,k, 'black', label = "Function")
+    plt.plot(f(avg1,n0,m0,1),color="blue",label="Vertex t1")
+    plt.plot(f(avg2,n0,m0,10),color="red",label="Vertex t2")
+    plt.plot(f(avg3,n0,m0,100),color="green",label="Vertex t3")
+    plt.plot(f(avg4,n0,m0,1000),color="orange",label="Vertex t4")
+    plt.legend()
+    #plt.xlim(1000, tmax)
+    plt.xlabel('Time')
+    plt.ylabel('Degree')
+
+    plt.show()
+
+def plot_no_growth(avg1,avg2,avg3,avg4,tmax,n0,m0):
+    # #Comparing ki for no Growth
+    t = np.linspace(0, tmax, 100)
+    k = 2 * (m0 / 1000) * t
+    plt.plot(t, k, 'black' , label = "Function")
+    plt.plot(avg1, color="blue",label="Vertex 1")
+    plt.plot(avg2, color="red",label="Vertex 2")
+    plt.plot(avg3, color="green",label="Vertex 3")
+    plt.plot(avg4, color="orange",label="Vertex 4")
+    plt.xlabel('Time')
+    plt.ylabel('Degree')
+    plt.xlim(1000, tmax)
+    plt.legend()
+    plt.show()
